@@ -13,6 +13,7 @@ This folder contains customer-facing operator docs and contributor docs for
 | Provision tunnel roles, groups, IDs, or API keys | [`permissions.md`](permissions.md) |
 | Choose Docker, Kubernetes, or VM deployment | [`deployment/overview.md`](deployment/overview.md) |
 | Debug readiness, connector discovery, OAuth, or support bundles | [`troubleshooting.md`](troubleshooting.md) |
+| Trace one MCP request through response delivery | [`response-lifecycle-debugging.md`](response-lifecycle-debugging.md) |
 | Understand hosted request, payload, deadline, and queue limits | [Hosted service limits](connectors.md#hosted-service-limits) |
 
 ## Start Here
