@@ -690,7 +690,31 @@ func (c *TunnelServiceClient) PostResponse(ctx context.Context, requestID types.
 		}
 
 		c.deliveryHealth.Attempt(attempt > 1)
+		traceResponsePost := logger.Enabled(ctx, slog.LevelDebug)
+		var responsePostStart time.Time
+		if traceResponsePost {
+			responsePostStart = time.Now()
+		}
 		resp, err := c.client.Do(attemptReq)
+		if traceResponsePost {
+			attrs := []any{
+				slog.Int("attempt", attempt),
+				slog.Int64("elapsed_ms", time.Since(responsePostStart).Milliseconds()),
+			}
+			if err != nil {
+				// Match the bounded error categories used by response-delivery health.
+				category, _ := healthFailure(err)
+				attrs = append(attrs,
+					slog.String("outcome", "transport_error"),
+					slog.String("failure_category", category))
+			} else {
+				attrs = append(attrs, slog.String("outcome", "http_response"),
+					slog.Int("status_code", resp.StatusCode))
+			}
+			// Do returns after response headers, before body closure and
+			// delivery disposition handling. Do not call this acceptance.
+			logger.DebugContext(ctx, "control-plane response POST HTTP attempt returned", attrs...)
+		}
 		if err != nil {
 			category, status := healthFailure(err)
 			healthStatus = status
