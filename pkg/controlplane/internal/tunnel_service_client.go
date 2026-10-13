@@ -690,6 +690,10 @@ func (c *TunnelServiceClient) PostResponse(ctx context.Context, requestID types.
 		}
 
 		c.deliveryHealth.Attempt(attempt > 1)
+		if logger.Enabled(ctx, slog.LevelDebug) {
+			logger.DebugContext(ctx, "control-plane response POST attempt started",
+				slog.Int("attempt", attempt))
+		}
 		resp, err := c.client.Do(attemptReq)
 		if err != nil {
 			category, status := healthFailure(err)
